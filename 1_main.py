@@ -1,147 +1,102 @@
 import streamlit as st
+import pandas as pd
+import matplotlib.pyplot as plt
 
-# ---------------------
-# Configuration générale
-# ---------------------
+# -----------------------------
+# CONFIG
+# -----------------------------
 st.set_page_config(
-	page_title="Étude de marché – Cinéma en Creuse",
+	page_title="Projet 2 – Cinéma Creuse",
 	layout="wide"
 )
 
-# ---------------------
+# -----------------------------
 # TITRE
-# ---------------------
-st.title("🎬 Étude de marché – Consommation de cinéma")
-st.subheader("Département de la Creuse (23)")
-
+# -----------------------------
+st.markdown("### 📍 Le département de la Creuse 🐄")
+st.markdown("**115 995 habitants en 2020**  \n📉 Population en diminution")
 st.markdown("---")
 
-# ---------------------
-# KPIs (comme sur ton lien)
-# ---------------------
-col1, col2, col3, col4 = st.columns(4)
+# =============================
+# DATA
+# =============================
 
-with col1:
-	st.metric(
-    	label="Population (2022)",
-    	value="115 529"
+# Répartition par âge (INSEE – valeurs arrondies)
+age_data = pd.DataFrame({
+	"Tranche d'âge": [
+    	"0-14 ans",
+    	"15-29 ans",
+    	"30-44 ans",
+    	"45-59 ans",
+    	"60-74 ans",
+    	"75 ans ou plus"
+	],
+	"Pourcentage": [13, 12, 14, 21, 25, 15]
+})
+
+# Evolution population Creuse (INSEE)
+pop_data = pd.DataFrame({
+	"Année": [
+    	2006, 2007, 2008, 2009, 2010,
+    	2011, 2012, 2013, 2014, 2015,
+    	2016, 2017, 2018, 2019, 2020
+	],
+	"Population": [
+    	123500, 123900, 124100, 123700, 123000,
+    	122400, 121300, 120700, 120400, 120100,
+    	119100, 118300, 117100, 116300, 115995
+	]
+})
+
+# =============================
+# LAYOUT
+# =============================
+
+col_left, col_right = st.columns([2, 1])
+
+# -----------------------------
+# TEXTE + CAMEMBERT
+# -----------------------------
+with col_right:
+	st.markdown("**58 ans en 2020**  \nÂge médian")
+	
+	fig_pie, ax_pie = plt.subplots()
+	ax_pie.pie(
+    	age_data["Pourcentage"],
+    	labels=age_data["Tranche d'âge"],
+    	autopct="%1.0f%%",
+    	startangle=90
+	)
+	ax_pie.axis("equal")
+	st.pyplot(fig_pie)
+
+# -----------------------------
+# COURBE POPULATION
+# -----------------------------
+with col_left:
+	st.markdown("### Évolution du nombre d’habitants")
+
+	fig_line, ax_line = plt.subplots()
+	ax_line.plot(
+    	pop_data["Année"],
+    	pop_data["Population"],
+    	marker="o"
 	)
 
-with col2:
-	st.metric(
-    	label="Densité (hab/km²)",
-    	value="20,8"
-	)
+	ax_line.set_xlabel("Année")
+	ax_line.set_ylabel("Population")
+	ax_line.grid(True)
 
-with col3:
-	st.metric(
-    	label="Part des +60 ans",
-    	value="39 %"
-	)
+	st.pyplot(fig_line)
 
-with col4:
-	st.metric(
-    	label="Cinémas",
-    	value="Peu équipés",
-    	delta="Sous la moyenne nationale"
-	)
-
-st.markdown("---")
-
-# ---------------------
-# SECTION 1 – Démographie
-# ---------------------
-st.header("👥 Contexte démographique (INSEE)")
-
-st.markdown(
-	"""
-La Creuse est un département rural à **faible densité de population**.
-La population diminue régulièrement depuis plusieurs décennies et se caractérise
-par un **vieillissement marqué**.
-
-- Population totale : **115 529 habitants**
-- Densité : **20,8 habitants/km²**
-- **39 % des habitants ont 60 ans ou plus**
-- Seulement **25 % ont moins de 30 ans**
-"""
-)
-
-# ---------------------
-# SECTION 2 – Équipement cinéma
-# ---------------------
-st.header("🎞️ Équipement cinématographique (CNC)")
-
-st.markdown(
-	"""
-Selon le CNC, la Creuse fait partie des départements **les moins bien équipés en salles de cinéma**.
-
-Caractéristiques principales :
-- Peu d'établissements
-- Salles de **petite capacité**
-- Cinémas majoritairement **Art et Essai**
-- Implantation concentrée dans quelques villes (Guéret, La Souterraine, Aubusson)
-- **Absence de multiplexe**
-"""
-)
-
-# ---------------------
-# SECTION 3 – Fréquentation
-# ---------------------
-st.header("📉 Fréquentation des salles (CNC)")
-
-st.markdown(
-	"""
-La fréquentation des salles est **inférieure à la moyenne nationale**, ce qui est
-caractéristique des territoires ruraux peu denses.
-
-La consommation de cinéma dépend fortement :
-- de la **distance aux salles**
-- de la **taille des établissements**
-- de la diversité de la programmation
-
-La pratique est donc **occasionnelle**, et fortement conditionnée par l’offre locale.
-"""
-)
-
-# ---------------------
-# SECTION 4 – Pratiques culturelles
-# ---------------------
-st.header("🎭 Pratiques culturelles (INSEE)")
-
-st.markdown(
-	"""
-À l’échelle nationale :
-- **40 % des Français** vont au cinéma au moins une fois par an
-- Cette proportion est **plus faible chez les populations âgées et rurales**
-
-Les principales raisons de non‑fréquentation :
-- Manque d’intérêt
-- Éloignement géographique
-- Contraintes financières secondaires
-"""
-)
-
-# ---------------------
-# SECTION SYNTHESE
-# ---------------------
-st.header("✅ Synthèse marché")
-
-st.success(
-	"""
-Le marché du cinéma dans la Creuse est :
-- de **petite taille**
-- contraint par la **démographie**
-- limité par l’**offre d’équipements**
-
-Les salles jouent un rôle **culturel et social essentiel**, davantage qu’un rôle de
-loisir de masse.
-"""
-)
-
-# ---------------------
+# -----------------------------
 # SOURCES
-# ---------------------
-st.markdown("---")
-st.caption(
-	"Sources : INSEE (dossier département Creuse), CNC (Géographie du cinéma, équipements et fréquentation)"
+# -----------------------------
+st.markdown(
+	"""
+*Sources :* 
+INSEE – Recensement de la population 
+CNC – Géographie du cinéma
+"""
 )
+
